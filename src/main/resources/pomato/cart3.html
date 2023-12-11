@@ -219,7 +219,9 @@
 
         document.getElementById('carts').innerHTML = htmlContent;
     }
+
     let cart = JSON.parse(localStorage.getItem('cart3')) || [];
+
     function increaseQuantity(index) {
         let cart = JSON.parse(localStorage.getItem('cart3')) || [];
         cart[index].quantity += 1;
@@ -254,7 +256,7 @@
                 id: JSON.parse(localStorage.getItem('user'))
             },
             store: {
-                id:1
+                id: 3
             },
             createAt: new Date().toISOString(),
             totalMoney: calculateTotal()
@@ -293,6 +295,7 @@
                 .catch(error => console.error('Error creating order detail:', error));
         });
     }
+
     function loadMenu() {
         let str = `
                                     <li class="active"><a href="index1.html">Home</a></li>`
@@ -311,6 +314,7 @@
     }
 
     loadMenu()
+
     function logout() {
         localStorage.clear();
         window.location.href = 'login.html'
