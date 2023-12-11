@@ -23,10 +23,13 @@ public class Product {
     @ManyToOne
     private Supplier supplier;
     private int inventoryQuantity1;
+    private int inventoryQuantity2;
     @Column(columnDefinition = "int default 0")
     private int amount;
     @Column(columnDefinition = "int default 0")
     private int amount1;
+    @Column(columnDefinition = "int default 0")
+    private int amount2;
 
     public int getAmount1() {
         return amount1;
@@ -120,4 +123,19 @@ public class Product {
         this.supplier = supplier;
     }
 
+    public int getInventoryQuantity2() {
+        return inventoryQuantity2;
+    }
+
+    public void setInventoryQuantity2(int inventoryQuantity2) {
+        this.inventoryQuantity2 = inventoryQuantity2;
+    }
+
+    public int getAmount2() {
+        return amount2;
+    }
+
+    public void setAmount2(int amount2) {
+        this.amount2 = amount2;
+    }
 }

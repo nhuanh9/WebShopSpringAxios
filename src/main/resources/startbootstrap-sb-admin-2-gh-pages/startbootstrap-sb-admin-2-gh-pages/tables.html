@@ -181,10 +181,12 @@
                 '                                            <th>Name</th>\n' +
                 '                                            <th>Price</th>\n' +
                 '                                            <th>Description</th>\n' +
-                '                                            <th>Inventory Quantity 1</th>\n' +
-                '                                            <th>Inventory Quantity 2</th>\n' +
+                '                                            <th>Inventory 1</th>\n' +
+                '                                            <th>Inventory 2</th>\n' +
+                '                                            <th>Inventory 3</th>\n' +
                 '                                            <th>Sell Number 1</th>\n' +
                 '                                            <th>Sell Number 2</th>\n' +
+                '                                            <th>Sell Number 3</th>\n' +
                 '                                            <th>Supplier</th>\n' +
                 '                                            <th>Action</th>\n' +
                 '                                        </tr>\n' +
@@ -198,8 +200,10 @@
                                                            <td>${listProduct[i].description}</td>
                                                            <td>${listProduct[i].inventoryQuantity}</td>
                                                            <td>${listProduct[i].inventoryQuantity1}</td>
+                                                           <td>${listProduct[i].inventoryQuantity2}</td>
                                                            <td>${listProduct[i].amount}</td>
                                                            <td>${listProduct[i].amount1}</td>
+                                                           <td>${listProduct[i].amount2}</td>
                                                            <td>${listProduct[i].supplier.name}</td>
                                                             <td>
                                                             <button class="btn btn-primary" onclick="showEditProductFrom(${listProduct[i].id})">Edit</button>
@@ -246,6 +250,10 @@
             '  <div class="form-group">\n' +
             '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
             '    <input type="text" class="form-control" id="inventoryQuantity2">\n' +
+            '  </div>\n'+
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Inventory Quantity 3</label>\n' +
+            '    <input type="text" class="form-control" id="inventoryQuantity3">\n' +
             '  </div>\n'
             + '  <div class="form-group">\n' +
             '    <label for="exampleInputPassword1">Image</label>\n' +
@@ -274,7 +282,7 @@
         axios.get(API_URL + '/products/' + id).then(res => {
             let product = res.data
             let str = '                    <!-- Page Heading -->\n' +
-                '                    <h1 class="h3 mb-2 text-gray-800">Add Product' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Edit Product' +
                 '</h1>\n' +
                 '                    <!-- DataTales Example -->\n' +
                 '                    <div class="card shadow mb-4">\n' +
@@ -296,21 +304,37 @@
                 '  </div>\n' +
                 '  <div class="form-group">\n' +
                 '    <label for="exampleInputPassword1">Inventory Quantity 1</label>\n' +
-                '    <input type="text" class="form-control" id="inventoryQuantity"  value="' + product.inventoryQuantity + '">\n' +
+                '    <input type="text" class="form-control" id="inventoryQuantity1"  value="' + product.inventoryQuantity + '">\n' +
                 '  </div>\n' +
                 '  <div class="form-group">\n' +
                 '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
-                '    <input type="text" class="form-control" id="inventoryQuantity1"  value="' + product.inventoryQuantity1 + '">\n' +
+                '    <input type="text" class="form-control" id="inventoryQuantity2"  value="' + product.inventoryQuantity1 + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
+                '    <input type="text" class="form-control" id="inventoryQuantity3"  value="' + product.inventoryQuantity2 + '">\n' +
                 '  </div>\n'
                 + '  <div class="form-group">\n' +
                 '    <label for="exampleInputPassword1">Image</label>\n' +
                 '    <input type="text" class="form-control" id="image"  value="' + product.image + '">\n' +
                 '  </div>\n' +
-                '  <button class="btn btn-primary" onclick="saveProduct(' + product.id + ')">Submit</button>\n' +
-                '                            </div>\n' +
-                '                        </div>\n' +
-                '                    </div>'
-            document.getElementById('main').innerHTML = str;
+                '  <div class="form-group">\n' +
+                '    <label for="supplier">Supplier</label>\n' +
+                '    <select class="form-control" id="supplier">\n' +
+                ''
+
+            axios.get(API_URL + '/suppliers').then(res => {
+                let suppliers = res.data;
+                for (let i = 0; i < suppliers.length; i++) {
+                    str += `<option value="${suppliers[i].id}">${suppliers[i].name}</option>`
+                }
+                str += ' </select> </div>\n' +
+                    '  <button class="btn btn-primary" onclick="saveProduct(' + id + ')">Submit</button>\n' +
+                    '                            </div>\n' +
+                    '                        </div>\n' +
+                    '                    </div>'
+                document.getElementById('main').innerHTML = str;
+            })
 
         })
     }
@@ -322,6 +346,7 @@
             description: document.getElementById('description').value,
             inventoryQuantity: document.getElementById('inventoryQuantity1').value,
             inventoryQuantity1: document.getElementById('inventoryQuantity2').value,
+            inventoryQuantity2: document.getElementById('inventoryQuantity3').value,
             image: document.getElementById('image').value,
             supplier: {
                 id: document.getElementById('supplier').value
@@ -337,10 +362,13 @@
             name: document.getElementById('name').value,
             price: document.getElementById('price').value,
             description: document.getElementById('description').value,
-            inventoryQuantity1: document.getElementById('inventoryQuantity1').value,
-            inventoryQuantity2: document.getElementById('inventoryQuantity2').value,
+            inventoryQuantity: document.getElementById('inventoryQuantity1').value,
+            inventoryQuantity1: document.getElementById('inventoryQuantity2').value,
+            inventoryQuantity2: document.getElementById('inventoryQuantity3').value,
             image: document.getElementById('image').value,
-            s
+            supplier: {
+                id: document.getElementById('supplier').value
+            }
         }
         axios.put(API_URL + '/products/' + id, data).then(res => {
             loadListProduct();

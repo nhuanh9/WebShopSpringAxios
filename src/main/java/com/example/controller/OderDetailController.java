@@ -38,11 +38,13 @@ public class OderDetailController {
         Oder oder = oderService.findById(oderDetail.getOder().getId()).get();
         if (oder.getStore().getId() == 1) {
             product.setInventoryQuantity(product.getInventoryQuantity() - oderDetail.getAmount());
-            product.setAmount(product.getAmount()+oderDetail.getAmount());
-        }
-        else {
+            product.setAmount(product.getAmount() + oderDetail.getAmount());
+        } else if (oder.getStore().getId() == 2) {
             product.setInventoryQuantity1(product.getInventoryQuantity1() - oderDetail.getAmount());
-            product.setAmount1(product.getAmount1()+oderDetail.getAmount());
+            product.setAmount1(product.getAmount1() + oderDetail.getAmount());
+        } else {
+            product.setInventoryQuantity2(product.getInventoryQuantity2() - oderDetail.getAmount());
+            product.setAmount2(product.getAmount2() + oderDetail.getAmount());
         }
         productService.save(product);
         return new ResponseEntity(HttpStatus.OK);
