@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin 2 - Tables</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <div class="sidebar-brand-text mx-3">Admin</div>
+        </a>
+
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+               aria-expanded="true" aria-controls="collapsePages">
+                <span>Product</span>
+            </a>
+            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <span class="collapse-item" onclick="loadListProduct()">All</span>
+                    <span class="collapse-item" onclick="loadListProductInventory()">Inventory</span>
+                    <a class="collapse-item" onclick="loadListProductAmout()">Hot Sale</a>
+                </div>
+            </div>
+        </li>
+
+        <!-- Nav Item - Charts -->
+        <li class="nav-item">
+            <span class="nav-link">
+                <span onclick="loadListOrder()">Order</span>
+                </span>
+        </li>
+
+        <!-- Nav Item - Tables -->
+        <li class="nav-item">
+            <span class="nav-link">
+                <span onclick="loadListSupplier()">Supplier</span></span>
+        </li>
+        <li class="nav-item">
+            <span class="nav-link">
+                <span onclick="loadListStore()">Store</span></span>
+        </li>
+        <li class="nav-item">
+            <span class="nav-link">
+                <span onclick="loadListUser()">User</span></span>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid" id="main">
+
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+
+<!-- Page level plugins -->
+<script src="vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="js/demo/datatables-demo.js"></script>
+
+</body>
+<script>
+    const API_URL = 'http://localhost:8080'
+    loadListProduct()
+
+    function loadListProduct() {
+        axios.get(API_URL + '/products').then(res => {
+            let listProduct = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">List Product ' +
+                '<button class="btn btn-primary" onclick="showAddProductForm()">+</button>' +
+                '</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Name</th>\n' +
+                '                                            <th>Price</th>\n' +
+                '                                            <th>Description</th>\n' +
+                '                                            <th>Inventory Quantity 1</th>\n' +
+                '                                            <th>Inventory Quantity 2</th>\n' +
+                '                                            <th>Sell Number 1</th>\n' +
+                '                                            <th>Sell Number 2</th>\n' +
+                '                                            <th>Supplier</th>\n' +
+                '                                            <th>Action</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < listProduct.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${listProduct[i].name}</td>
+                                                           <td>${listProduct[i].price}</td>
+                                                           <td>${listProduct[i].description}</td>
+                                                           <td>${listProduct[i].inventoryQuantity}</td>
+                                                           <td>${listProduct[i].inventoryQuantity1}</td>
+                                                           <td>${listProduct[i].amount}</td>
+                                                           <td>${listProduct[i].amount1}</td>
+                                                           <td>${listProduct[i].supplier.name}</td>
+                                                            <td>
+                                                            <button class="btn btn-primary" onclick="showEditProductFrom(${listProduct[i].id})">Edit</button>
+                                                            <button class="btn btn-danger" type="submit" onclick="deleteProduct(${listProduct[i].id})">Delete</button>
+                                                            </td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function showAddProductForm() {
+        let str = '                    <!-- Page Heading -->\n' +
+            '                    <h1 class="h3 mb-2 text-gray-800">Add Product' +
+            '</h1>\n' +
+            '                    <!-- DataTales Example -->\n' +
+            '                    <div class="card shadow mb-4">\n' +
+            '                        <div class="card-header py-3">\n' +
+            '                        </div>\n' +
+            '                        <div class="card-body">\n' +
+            '                            <div class="table-responsive">\n ' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputEmail1">Name</label>\n' +
+            '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Price</label>\n' +
+            '    <input type="text" class="form-control" id="price">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Description</label>\n' +
+            '    <input type="text" class="form-control" id="description">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Inventory Quantity 1</label>\n' +
+            '    <input type="text" class="form-control" id="inventoryQuantity1">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
+            '    <input type="text" class="form-control" id="inventoryQuantity2">\n' +
+            '  </div>\n'
+            + '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Image</label>\n' +
+            '    <input type="text" class="form-control" id="image">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="supplier">Supplier</label>\n' +
+            '    <select class="form-control" id="supplier">\n' +
+            ''
+
+        axios.get(API_URL + '/suppliers').then(res => {
+            let suppliers = res.data;
+            for (let i = 0; i < suppliers.length; i++) {
+                str += `<option value="${suppliers[i].id}">${suppliers[i].name}</option>`
+            }
+            str += ' </select> </div>\n' +
+                '  <button class="btn btn-primary" onclick="addNewProduct()">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function showEditProductFrom(id) {
+        axios.get(API_URL + '/products/' + id).then(res => {
+            let product = res.data
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Add Product' +
+                '</h1>\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n ' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputEmail1">Name</label>\n' +
+                '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp" value="' + product.name + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Price</label>\n' +
+                '    <input type="text" class="form-control" id="price"  value="' + product.price + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Description</label>\n' +
+                '    <input type="text" class="form-control" id="description"  value="' + product.description + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Inventory Quantity 1</label>\n' +
+                '    <input type="text" class="form-control" id="inventoryQuantity"  value="' + product.inventoryQuantity + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
+                '    <input type="text" class="form-control" id="inventoryQuantity1"  value="' + product.inventoryQuantity1 + '">\n' +
+                '  </div>\n'
+                + '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Image</label>\n' +
+                '    <input type="text" class="form-control" id="image"  value="' + product.image + '">\n' +
+                '  </div>\n' +
+                '  <button class="btn btn-primary" onclick="saveProduct(' + product.id + ')">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+
+        })
+    }
+
+    function addNewProduct() {
+        let data = {
+            name: document.getElementById('name').value,
+            price: document.getElementById('price').value,
+            description: document.getElementById('description').value,
+            inventoryQuantity: document.getElementById('inventoryQuantity1').value,
+            inventoryQuantity1: document.getElementById('inventoryQuantity2').value,
+            image: document.getElementById('image').value,
+            supplier: {
+                id: document.getElementById('supplier').value
+            }
+        }
+        axios.post(API_URL + '/products', data).then(res => {
+            loadListProduct();
+        })
+    }
+
+    function saveProduct(id) {
+        let data = {
+            name: document.getElementById('name').value,
+            price: document.getElementById('price').value,
+            description: document.getElementById('description').value,
+            inventoryQuantity1: document.getElementById('inventoryQuantity1').value,
+            inventoryQuantity2: document.getElementById('inventoryQuantity2').value,
+            image: document.getElementById('image').value,
+            s
+        }
+        axios.put(API_URL + '/products/' + id, data).then(res => {
+            loadListProduct();
+        })
+    }
+
+    function deleteProduct(id) {
+        axios.delete(API_URL + '/products/' + id).then(res => {
+            loadListProduct();
+        })
+    }
+
+    function loadListProductInventory() {
+        axios.get(API_URL + '/products/findByInventoryQuantity').then(res => {
+            let listProduct = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Inventory</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Name</th>\n' +
+                '                                            <th>Price</th>\n' +
+                '                                            <th>Description</th>\n' +
+                '                                            <th>Inventory Quantity</th>\n' +
+                '                                            <th>Amount</th>\n' +
+                '                                            <th>Status</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < listProduct.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${listProduct[i].name}</td>
+                                                           <td>${listProduct[i].price}</td>
+                                                           <td>${listProduct[i].description}</td>
+                                                           <td>${listProduct[i].inventoryQuantity}</td>
+                                                           <td>${listProduct[i].amount}</td>
+                                                           <td>${listProduct[i].status}</td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function loadListProductAmout() {
+        axios.get(API_URL + '/products/findByAmount').then(res => {
+            let listProduct = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Hot Sale</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Name</th>\n' +
+                '                                            <th>Price</th>\n' +
+                '                                            <th>Description</th>\n' +
+                '                                            <th>Inventory Quantity</th>\n' +
+                '                                            <th>Amount</th>\n' +
+                '                                            <th>Status</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < listProduct.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${listProduct[i].name}</td>
+                                                           <td>${listProduct[i].price}</td>
+                                                           <td>${listProduct[i].description}</td>
+                                                           <td>${listProduct[i].inventoryQuantity}</td>
+                                                           <td>${listProduct[i].amount}</td>
+                                                           <td>${listProduct[i].status}</td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function loadListOrder() {
+        axios.get(API_URL + '/oders').then(res => {
+            let oders = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">' +
+                'List Order <button class="btn btn-primary" type="submit">+</button>' +
+                '</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Customer</th>\n' +
+                '                                            <th>CreatedAt</th>\n' +
+                '                                            <th>Total Money</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < oders.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${oders[i].user.username}</td>
+                                                           <td>${oders[i].createdAt}</td>
+                                                           <td>${oders[i].totalMoney}</td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function loadListSupplier() {
+        axios.get(API_URL + '/suppliers').then(res => {
+            let suppliers = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">' +
+                'List Supplier <button class="btn btn-primary" onclick="showAddSupplierForm()">+</button>' +
+                '</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Name</th>\n' +
+                '                                            <th>Address</th>\n' +
+                '                                            <th>Phone</th>\n' +
+                '                                            <th>Action</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < suppliers.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${suppliers[i].name}</td>
+                                                           <td>${suppliers[i].address}</td>
+                                                           <td>${suppliers[i].phone}</td>
+
+                                                            <td>
+                                                            <button class="btn btn-primary" onclick="showEditSupplierFrom(${suppliers[i].id})">Edit</button>
+                                                            <button class="btn btn-danger" type="submit" onclick="deleteSupplier(${suppliers[i].id})">Delete</button>
+                                                            </td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function showAddSupplierForm() {
+        let str = '                    <!-- Page Heading -->\n' +
+            '                    <h1 class="h3 mb-2 text-gray-800">Add Supplier' +
+            '</h1>\n' +
+            '                    <!-- DataTales Example -->\n' +
+            '                    <div class="card shadow mb-4">\n' +
+            '                        <div class="card-header py-3">\n' +
+            '                        </div>\n' +
+            '                        <div class="card-body">\n' +
+            '                            <div class="table-responsive">\n ' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputEmail1">Name</label>\n' +
+            '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Address</label>\n' +
+            '    <input type="text" class="form-control" id="address">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Phone</label>\n' +
+            '    <input type="text" class="form-control" id="phone">\n' +
+            '  </div>\n' +
+            '  <button class="btn btn-primary" onclick="addNewSupplier()">Submit</button>\n' +
+            '                            </div>\n' +
+            '                        </div>\n' +
+            '                    </div>'
+        document.getElementById('main').innerHTML = str;
+    }
+
+    function showEditSupplierFrom(id) {
+        axios.get(API_URL + '/suppliers/' + id).then(res => {
+            let supplier = res.data
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Edit Suppiler' +
+                '</h1>\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n ' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputEmail1">Name</label>\n' +
+                '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp" value="' + supplier.name + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Address</label>\n' +
+                '    <input type="text" class="form-control" id="address"  value="' + supplier.address + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Phone</label>\n' +
+                '    <input type="text" class="form-control" id="phone"  value="' + supplier.phone + '">\n' +
+                '  </div>\n' +
+                '  <button class="btn btn-primary" onclick="saveSupplier(' + supplier.id + ')">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+
+        })
+    }
+
+    function addNewSupplier() {
+        let data = {
+            name: document.getElementById('name').value,
+            address: document.getElementById('address').value,
+            phone: document.getElementById('phone').value,
+        }
+        axios.post(API_URL + '/suppliers', data).then(res => {
+            loadListSupplier();
+        })
+    }
+
+    function saveSupplier(id) {
+        let data = {
+            name: document.getElementById('name').value,
+            address: document.getElementById('address').value,
+            phone: document.getElementById('phone').value,
+        }
+        axios.put(API_URL + '/suppliers/' + id, data).then(res => {
+            loadListSupplier();
+        })
+    }
+
+    function deleteSupplier(id) {
+        axios.delete(API_URL + '/suppliers/' + id).then(res => {
+            loadListSupplier();
+        })
+    }
+
+
+    function loadListStore() {
+        axios.get(API_URL + '/products').then(res => {
+            let list = res.data;
+            let arr = [0, 0];
+            for (let i = 0; i < list.length; i++) {
+                arr[0] += list[i].amount * list[i].price;
+                arr[1] += list[i].amount1 * list[i].price;
+            }
+            axios.get(API_URL + '/stores').then(res => {
+                let stores = res.data;
+                let str = '                    <!-- Page Heading -->\n' +
+                    '                    <h1 class="h3 mb-2 text-gray-800">' +
+                    'List Store' +
+                    '</h1>\n' +
+                    '\n' +
+                    '                    <!-- DataTales Example -->\n' +
+                    '                    <div class="card shadow mb-4">\n' +
+                    '                        <div class="card-body">\n' +
+                    '                            <div class="table-responsive">\n' +
+                    '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                    '                                    <thead>\n' +
+                    '                                        <tr>\n' +
+                    '                                            <th>Name</th>\n' +
+                    '                                            <th>Address</th>\n' +
+                    '                                            <th>Phone</th>\n' +
+                    '                                            <th>User</th>\n' +
+                    '                                            <th>Revenue</th>\n' +
+                    '                                        </tr>\n' +
+                    '                                    </thead>\n' +
+                    '                                    <tbody>\n'
+                for (let i = 0; i < stores.length; i++) {
+                    str += `
+                                                        <tr>
+                                                           <td><a href="${'../../pomato/index' + (i + 1) + '.html'}">${stores[i].name}</a></td>
+                                                           <td>${stores[i].address}</td>
+                                                           <td>${stores[i].phone}</td>
+                                                           <td>${stores[i].user.username}</td>
+                                                           <td>${arr[i]}</td>
+                                                        </tr>`
+                }
+                str +=
+                    '                                    </tbody>\n' +
+                    '                                </table>\n' +
+                    '                            </div>\n' +
+                    '                        </div>\n' +
+                    '                    </div>'
+                document.getElementById('main').innerHTML = str;
+            })
+        })
+    }
+
+    function showAddStoreForm() {
+
+        axios.get(API_URL + '/users').then(res => {
+
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Add Store' +
+                '</h1>\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n ' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputEmail1">Name</label>\n' +
+                '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Address</label>\n' +
+                '    <input type="text" class="form-control" id="address">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Phone</label>\n' +
+                '    <input type="text" class="form-control" id="phone">\n' +
+                '  </div>\n' + '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">User</label>\n' +
+                '<select id="user" class="form-control">'
+            let data = res.data;
+            for (let i = 0; i < data.length; i++) {
+                str += '<option value="' + data[i].id + '">' + data[i].username + '</option>\n';
+
+            }
+            str += '</select>  </div>\n' +
+                '  </div>\n' +
+                '  <button class="btn btn-primary" onclick="addNewStore()">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+
+    }
+
+    function showEditStoreFrom(id) {
+        axios.get(API_URL + '/stores/' + id).then(res => {
+            let store = res.data
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Edit Store' +
+                '</h1>\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n ' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputEmail1">Name</label>\n' +
+                '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp" value="' + store.name + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Address</label>\n' +
+                '    <input type="text" class="form-control" id="address"  value="' + store.address + '">\n' +
+                '  </div>\n' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">Phone</label>\n' +
+                '    <input type="text" class="form-control" id="phone"  value="' + store.phone + '">\n' +
+                '  </div>\n' + '  <div class="form-group">\n' +
+                '    <label for="exampleInputPassword1">User</label>\n' +
+                '<select id="user">'
+
+            axios.get(API_URL + '/users').then(res => {
+                let data = res.data;
+                for (let i = 0; i < data.length; i++) {
+                    str += '<option value="' + data[i].id + '">' + data[i].username + '</option>\n';
+                }
+            })
+            str += '</select>  </div>\n' +
+                '  <button class="btn btn-primary" onclick="saveStore(' + store.id + ')">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+
+        })
+    }
+
+    function addNewStore() {
+        let data = {
+            name: document.getElementById('name').value,
+            address: document.getElementById('address').value,
+            phone: document.getElementById('phone').value,
+            user: {
+                id: document.getElementById('user').value,
+            }
+        }
+        axios.post(API_URL + '/stores', data).then(res => {
+            loadListStore();
+        })
+    }
+
+    function saveStore(id) {
+        let data = {
+            name: document.getElementById('name').value,
+            address: document.getElementById('address').value,
+            phone: document.getElementById('phone').value,
+            user: document.getElementById('user').value,
+        }
+        axios.put(API_URL + '/stores/' + id, data).then(res => {
+            loadListStore();
+        })
+    }
+
+    function deleteStore(id) {
+        axios.delete(API_URL + '/stores/' + id).then(res => {
+            loadListStore();
+        })
+    }
+
+
+    function loadListUser() {
+        axios.get(API_URL + '/users').then(res => {
+            let users = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">' +
+                'List User <button class="btn btn-primary" onclick="showAddUserForm()">+</button>' +
+                '</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Username</th>\n' +
+                '                                            <th>Firstname</th>\n' +
+                '                                            <th>Lastname</th>\n' +
+                '                                            <th>Role</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < users.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${users[i].username}</td>
+                                                           <td>${users[i].firstname}</td>
+                                                           <td>${users[i].lastname}</td>
+                                                           <td>${users[i].roles[0].name}</td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+
+    function showAddUserForm() {
+        let str = '                    <!-- Page Heading -->\n' +
+            '                    <h1 class="h3 mb-2 text-gray-800">Add Manager' +
+            '</h1>\n' +
+            '                    <!-- DataTales Example -->\n' +
+            '                    <div class="card shadow mb-4">\n' +
+            '                        <div class="card-header py-3">\n' +
+            '                        </div>\n' +
+            '                        <div class="card-body">\n' +
+            '                            <div class="table-responsive">\n ' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputEmail1">Username</label>\n' +
+            '    <input type="email" class="form-control" id="username" aria-describedby="emailHelp">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Password</label>\n' +
+            '    <input type="text" class="form-control" id="password">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Confirm Password</label>\n' +
+            '    <input type="text" class="form-control" id="confirmPassword">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Firstname</label>\n' +
+            '    <input type="text" class="form-control" id="firstname">\n' +
+            '  </div>\n' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputPassword1">Lastname</label>\n' +
+            '    <input type="text" class="form-control" id="lastname">\n' +
+            '  </div>\n' +
+            '  <button class="btn btn-primary" onclick="register()">Submit</button>\n' +
+            '                            </div>\n' +
+            '                        </div>\n' +
+            '                    </div>'
+        document.getElementById('main').innerHTML = str;
+    }
+
+    function register() {
+        let data = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            confirmPassword: document.getElementById('confirmPassword').value,
+            firstname: document.getElementById('firstname').value,
+            lastname: document.getElementById('lastname').value,
+            roles: [
+                {id: 2}
+            ]
+        }
+        axios.post('http://localhost:8080/register', data).then(res => {
+            alert('Add user Success')
+        })
+    }
+</script>
+</html>
