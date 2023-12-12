@@ -67,6 +67,10 @@
         </li>
         <li class="nav-item">
             <span class="nav-link">
+                <span onclick="loadListCategory()">Category</span></span>
+        </li>
+        <li class="nav-item">
+            <span class="nav-link">
                 <span onclick="loadListStore()">Store</span></span>
         </li>
         <li class="nav-item">
@@ -160,7 +164,6 @@
 <script>
     const API_URL = 'http://localhost:8080'
     loadListProduct()
-
     function loadListProduct() {
         axios.get(API_URL + '/products').then(res => {
             let listProduct = res.data;
@@ -189,6 +192,7 @@
                 '                                            <th>Sell Number 3</th>\n' +
                 '                                            <th>Supplier</th>\n' +
                 '                                            <th>Action</th>\n' +
+                '                                            <th>Category</th>\n' +
                 '                                        </tr>\n' +
                 '                                    </thead>\n' +
                 '                                    <tbody>\n'
@@ -205,6 +209,7 @@
                                                            <td>${listProduct[i].amount1}</td>
                                                            <td>${listProduct[i].amount2}</td>
                                                            <td>${listProduct[i].supplier.name}</td>
+                                                           <td>${listProduct[i].category.name}</td>
                                                             <td>
                                                             <button class="btn btn-primary" onclick="showEditProductFrom(${listProduct[i].id})">Edit</button>
                                                             <button class="btn btn-danger" type="submit" onclick="deleteProduct(${listProduct[i].id})">Delete</button>
@@ -220,7 +225,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function showAddProductForm() {
         let str = '                    <!-- Page Heading -->\n' +
             '                    <h1 class="h3 mb-2 text-gray-800">Add Product' +
@@ -250,7 +254,7 @@
             '  <div class="form-group">\n' +
             '    <label for="exampleInputPassword1">Inventory Quantity 2</label>\n' +
             '    <input type="text" class="form-control" id="inventoryQuantity2">\n' +
-            '  </div>\n'+
+            '  </div>\n' +
             '  <div class="form-group">\n' +
             '    <label for="exampleInputPassword1">Inventory Quantity 3</label>\n' +
             '    <input type="text" class="form-control" id="inventoryQuantity3">\n' +
@@ -270,14 +274,25 @@
                 str += `<option value="${suppliers[i].id}">${suppliers[i].name}</option>`
             }
             str += ' </select> </div>\n' +
-                '  <button class="btn btn-primary" onclick="addNewProduct()">Submit</button>\n' +
-                '                            </div>\n' +
-                '                        </div>\n' +
-                '                    </div>'
-            document.getElementById('main').innerHTML = str;
+                '  <div class="form-group">\n' +
+                '    <label for="supplier">Category</label>\n' +
+                '    <select class="form-control" id="category">\n' +
+                ''
+            axios.get(API_URL + '/categories').then(res => {
+                let categories = res.data;
+                for (let i = 0; i < categories.length; i++) {
+                    str += `<option value="${categories[i].id}">${categories[i].name}</option>`
+                }
+                str += ' </select> </div>\n' +
+                    '  <button class="btn btn-primary" onclick="addNewProduct()">Submit</button>\n' +
+                    '                            </div>\n' +
+                    '                        </div>\n' +
+                    '                    </div>'
+
+                document.getElementById('main').innerHTML = str;
+            })
         })
     }
-
     function showEditProductFrom(id) {
         axios.get(API_URL + '/products/' + id).then(res => {
             let product = res.data
@@ -329,16 +344,27 @@
                     str += `<option value="${suppliers[i].id}">${suppliers[i].name}</option>`
                 }
                 str += ' </select> </div>\n' +
-                    '  <button class="btn btn-primary" onclick="saveProduct(' + id + ')">Submit</button>\n' +
-                    '                            </div>\n' +
-                    '                        </div>\n' +
-                    '                    </div>'
-                document.getElementById('main').innerHTML = str;
+                    '  <div class="form-group">\n' +
+                    '    <label for="supplier">Category</label>\n' +
+                    '    <select class="form-control" id="category">\n' +
+                    ''
+                axios.get(API_URL + '/categories').then(res => {
+                    let categories = res.data;
+                    for (let i = 0; i < categories.length; i++) {
+                        str += `<option value="${categories[i].id}">${categories[i].name}</option>`
+                    }
+                    str += ' </select> </div>\n' +
+                        '  <button class="btn btn-primary" onclick="saveProduct('+id+')">Submit</button>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </div>'
+
+                    document.getElementById('main').innerHTML = str;
+                })
             })
 
         })
     }
-
     function addNewProduct() {
         let data = {
             name: document.getElementById('name').value,
@@ -350,13 +376,15 @@
             image: document.getElementById('image').value,
             supplier: {
                 id: document.getElementById('supplier').value
+            },
+            category: {
+                id: document.getElementById('category').value
             }
         }
         axios.post(API_URL + '/products', data).then(res => {
             loadListProduct();
         })
     }
-
     function saveProduct(id) {
         let data = {
             name: document.getElementById('name').value,
@@ -368,19 +396,20 @@
             image: document.getElementById('image').value,
             supplier: {
                 id: document.getElementById('supplier').value
+            },
+            category: {
+                id: document.getElementById('category').value
             }
         }
         axios.put(API_URL + '/products/' + id, data).then(res => {
             loadListProduct();
         })
     }
-
     function deleteProduct(id) {
         axios.delete(API_URL + '/products/' + id).then(res => {
             loadListProduct();
         })
     }
-
     function loadListProductInventory() {
         axios.get(API_URL + '/products/findByInventoryQuantity').then(res => {
             let listProduct = res.data;
@@ -425,7 +454,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function loadListProductAmout() {
         axios.get(API_URL + '/products/findByAmount').then(res => {
             let listProduct = res.data;
@@ -470,7 +498,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function loadListOrder() {
         axios.get(API_URL + '/oders').then(res => {
             let oders = res.data;
@@ -509,7 +536,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function loadListSupplier() {
         axios.get(API_URL + '/suppliers').then(res => {
             let suppliers = res.data;
@@ -554,7 +580,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function showAddSupplierForm() {
         let str = '                    <!-- Page Heading -->\n' +
             '                    <h1 class="h3 mb-2 text-gray-800">Add Supplier' +
@@ -583,7 +608,6 @@
             '                    </div>'
         document.getElementById('main').innerHTML = str;
     }
-
     function showEditSupplierFrom(id) {
         axios.get(API_URL + '/suppliers/' + id).then(res => {
             let supplier = res.data
@@ -616,7 +640,6 @@
 
         })
     }
-
     function addNewSupplier() {
         let data = {
             name: document.getElementById('name').value,
@@ -627,7 +650,6 @@
             loadListSupplier();
         })
     }
-
     function saveSupplier(id) {
         let data = {
             name: document.getElementById('name').value,
@@ -638,14 +660,115 @@
             loadListSupplier();
         })
     }
-
     function deleteSupplier(id) {
         axios.delete(API_URL + '/suppliers/' + id).then(res => {
             loadListSupplier();
         })
     }
+    function loadListCategory() {
+        axios.get(API_URL + '/categories').then(res => {
+            let categories = res.data;
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">' +
+                'List Category <button class="btn btn-primary" onclick="showAddCategoryForm()">+</button>' +
+                '</h1>\n' +
+                '\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n' +
+                '                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">\n' +
+                '                                    <thead>\n' +
+                '                                        <tr>\n' +
+                '                                            <th>Name</th>\n' +
+                '                                            <th>Action</th>\n' +
+                '                                        </tr>\n' +
+                '                                    </thead>\n' +
+                '                                    <tbody>\n'
+            for (let i = 0; i < categories.length; i++) {
+                str += `
+                                                        <tr>
+                                                           <td>${categories[i].name}</td>
+                                                            <td>
+                                                            <button class="btn btn-primary" onclick="showEditCategoryForm(${categories[i].id})">Edit</button>
+                                                            <button class="btn btn-danger" type="submit" onclick="deleteCategory(${categories[i].id})">Delete</button>
+                                                            </td>
+                                                        </tr>`
+            }
+            str +=
+                '                                    </tbody>\n' +
+                '                                </table>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
+        })
+    }
+    function showAddCategoryForm() {
+        let str = '                    <!-- Page Heading -->\n' +
+            '                    <h1 class="h3 mb-2 text-gray-800">Add Supplier' +
+            '</h1>\n' +
+            '                    <!-- DataTales Example -->\n' +
+            '                    <div class="card shadow mb-4">\n' +
+            '                        <div class="card-header py-3">\n' +
+            '                        </div>\n' +
+            '                        <div class="card-body">\n' +
+            '                            <div class="table-responsive">\n ' +
+            '  <div class="form-group">\n' +
+            '    <label for="exampleInputEmail1">Name</label>\n' +
+            '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp">\n' +
+            '  </div>\n' +
+            '  <button class="btn btn-primary" onclick="addNewCategory()">Submit</button>\n' +
+            '                            </div>\n' +
+            '                        </div>\n' +
+            '                    </div>'
+        document.getElementById('main').innerHTML = str;
+    }
+    function addNewCategory() {
+        let data = {
+            name: document.getElementById('name').value,
+        }
+        axios.post(API_URL + '/categories', data).then(res => {
+            loadListCategory();
+        })
+    }
+    function showEditCategoryForm(id) {
+        axios.get(API_URL + '/categories/' + id).then(res => {
+            let category = res.data
+            let str = '                    <!-- Page Heading -->\n' +
+                '                    <h1 class="h3 mb-2 text-gray-800">Edit Category' +
+                '</h1>\n' +
+                '                    <!-- DataTales Example -->\n' +
+                '                    <div class="card shadow mb-4">\n' +
+                '                        <div class="card-header py-3">\n' +
+                '                        </div>\n' +
+                '                        <div class="card-body">\n' +
+                '                            <div class="table-responsive">\n ' +
+                '  <div class="form-group">\n' +
+                '    <label for="exampleInputEmail1">Name</label>\n' +
+                '    <input type="email" class="form-control" id="name" aria-describedby="emailHelp" value="' + category.name + '">\n' +
+                '  </div>\n' +
+                '  <button class="btn btn-primary" onclick="saveCategory(' + category.id + ')">Submit</button>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+            document.getElementById('main').innerHTML = str;
 
-
+        })
+    }
+    function saveCategory(id) {
+        let data = {
+            name: document.getElementById('name').value,
+        }
+        axios.put(API_URL + '/categories/' + id, data).then(res => {
+            loadListCategory();
+        })
+    }
+    function deleteCategory(id) {
+        axios.delete(API_URL + '/categories/' + id).then(res => {
+            loadListCategory();
+        })
+    }
     function loadListStore() {
         axios.get(API_URL + '/products').then(res => {
             let list = res.data;
@@ -696,7 +819,6 @@
             })
         })
     }
-
     function showAddStoreForm() {
 
         axios.get(API_URL + '/users').then(res => {
@@ -739,7 +861,6 @@
         })
 
     }
-
     function showEditStoreFrom(id) {
         axios.get(API_URL + '/stores/' + id).then(res => {
             let store = res.data
@@ -782,7 +903,6 @@
 
         })
     }
-
     function addNewStore() {
         let data = {
             name: document.getElementById('name').value,
@@ -796,7 +916,6 @@
             loadListStore();
         })
     }
-
     function saveStore(id) {
         let data = {
             name: document.getElementById('name').value,
@@ -808,14 +927,11 @@
             loadListStore();
         })
     }
-
     function deleteStore(id) {
         axios.delete(API_URL + '/stores/' + id).then(res => {
             loadListStore();
         })
     }
-
-
     function loadListUser() {
         axios.get(API_URL + '/users').then(res => {
             let users = res.data;
@@ -856,7 +972,6 @@
             document.getElementById('main').innerHTML = str;
         })
     }
-
     function showAddUserForm() {
         let str = '                    <!-- Page Heading -->\n' +
             '                    <h1 class="h3 mb-2 text-gray-800">Add Manager' +
@@ -893,7 +1008,6 @@
             '                    </div>'
         document.getElementById('main').innerHTML = str;
     }
-
     function register() {
         let data = {
             username: document.getElementById('username').value,

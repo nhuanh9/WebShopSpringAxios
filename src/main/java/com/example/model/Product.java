@@ -22,6 +22,18 @@ public class Product {
 
     @ManyToOne
     private Supplier supplier;
+
+    @ManyToOne
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     private int inventoryQuantity1;
     private int inventoryQuantity2;
     @Column(columnDefinition = "int default 0")
