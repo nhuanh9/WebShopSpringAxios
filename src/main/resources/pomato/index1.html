@@ -176,10 +176,26 @@
     </div>
 </div>
 <div class="brand-bg">
-    <div class="container">
-        <div class="row" id="list">
-            <div class="col-md-12">
-                <a class="read-more">See More</a>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-8">
+                <div class="row" id="list">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="listComment" class="brand_box">
+                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
+                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
+                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-8">
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="col-4">
+                        <span class="read-more"  style="margin-top: 0 !important;">Comment</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -228,6 +244,37 @@
     </div>
 </footer>
 
+<!-- Modal -->
+<div class="modal fade  modal-xl" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Cột ảnh sản phẩm -->
+                    <div class="col-md-6">
+                        <img src="link-to-product-image.jpg" class="img-fluid" id="img">
+                    </div>
+
+                    <!-- Cột thông tin sản phẩm -->
+                    <div class="col-md-6">
+                        <h2 id="name"></h2>
+                        <h4 id="price"></h4>
+                        <p id="category"></p>
+                        <p id="supplier"></p>
+                        <p id="des"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- end footer -->
 <!-- Javascript files-->
 <script src="js/jquery.min.js"></script>
@@ -266,10 +313,11 @@
         for (let i = 0; i < data.length; i++) {
             str += `<div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
                         <div class="brand_box">
-                            <img src="${data[i].image}" alt="img" />
+                            <img src="${data[i].image}" alt="img" class="mb-2"/>
                             <span>${data[i].name}</span>
                             <span>${data[i].price}</span>
                         <button onclick="addToCartAndRedirect(${data[i].id})" class="btn btn-outline-primary">Buy</button>
+                        <button onclick="viewProduct(${data[i].id})" class="btn btn-outline-secondary">Detail</button>
                         </div>
                     </div>`
 
@@ -277,10 +325,22 @@
         document.getElementById('list').innerHTML = str;
     })
 
+    function viewProduct(id) {
+        axios.get('http://localhost:8080/products/' + id).then(res => {
+            $('#staticBackdrop').modal('show');
+            document.getElementById('name').innerHTML = res.data.name;
+            document.getElementById('price').innerHTML = res.data.price;
+            document.getElementById('category').innerHTML = 'Category: ' + res.data.category.name;
+            document.getElementById('supplier').innerHTML = 'Supplier: ' + res.data.supplier.name;
+            document.getElementById('des').innerHTML = res.data.description;
+            document.getElementById('img').src = res.data.image;
+        })
+    }
+
     function addToCartAndRedirect(productId) {
         if (localStorage.getItem('user') == null) {
             alert('You must login before buy anything');
-            window.location.href='login.html';
+            window.location.href = 'login.html';
             return;
         }
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -391,6 +451,7 @@
     }
 
     loadMenu()
+
     function logout() {
         localStorage.clear();
         window.location.href = 'login.html'
