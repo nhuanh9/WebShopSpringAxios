@@ -1,8 +1,9 @@
 package com.example.controller;
 
 import com.example.model.Category;
-import com.example.model.Supplier;
+import com.example.model.Comments;
 import com.example.service.CategoryService;
+import com.example.service.CommentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @CrossOrigin("*")
-@RequestMapping("/categories")
-public class CategoryController {
+@RequestMapping("/comments")
+public class CommentsController {
 
     @Autowired
-    CategoryService service;
+    CommentsService service;
 
     @GetMapping
     public ResponseEntity findAll() {
@@ -23,8 +24,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity addSales(@RequestBody Category category) {
-        service.save(category);
+    public ResponseEntity addSales(@RequestBody Comments comments) {
+        service.save(comments);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -35,9 +36,9 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody Category category) {
-        category.setId(id);
-        service.save(category);
+    public ResponseEntity update(@PathVariable Long id, @RequestBody Comments comments) {
+        comments.setId(id);
+        service.save(comments);
         return new ResponseEntity(HttpStatus.OK);
     }
 

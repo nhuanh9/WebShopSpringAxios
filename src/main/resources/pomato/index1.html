@@ -30,6 +30,11 @@
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css"
           media="screen">
+    <style>
+        *{
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+    </style>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
@@ -76,9 +81,9 @@
                         <ul>
                             <li><span id="cartQuantity" style="color: white"
                                       onclick="redirectToCart()"> View card (0)</span></li>
-                            <li><a href="index1.html"> Ha Noi Shop</a></li>
-                            <li><a href="index2.html"> HCM Shop</a></li>
-                            <li><a href="index3.html">Da Nang Shop</a></li>
+<!--                            <li><a href="index1.html"> Ha Noi Shop</a></li>-->
+<!--                            <li><a href="index2.html"> HCM Shop</a></li>-->
+<!--                            <li><a href="index3.html">Da Nang Shop</a></li>-->
                         </ul>
                     </div>
                 </div>
@@ -183,17 +188,15 @@
                 </div>
             </div>
             <div class="col-md-4">
+                <h3>Comments</h3>
                 <div id="listComment" class="brand_box">
-                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
-                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
-                    <p style="text-align: start; padding-left: 30px">Username: pass</p>
                 </div>
                 <div class="row mt-3">
                     <div class="col-8">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" id="cmt">
                     </div>
                     <div class="col-4">
-                        <span class="read-more"  style="margin-top: 0 !important;">Comment</span>
+                        <span class="read-more" style="margin-top: 0 !important;" onclick="addComment()">Comment</span>
                     </div>
                 </div>
             </div>
@@ -306,6 +309,33 @@
 </script>
 <script>
 
+    loadComment()
+
+    function loadComment() {
+        axios.get('http://localhost:8080/comments').then(res => {
+            let data = res.data;
+            let str = '';
+            for (let i = 0; i < data.length; i++) {
+                str += `
+                    <p style="text-align: start; padding-left: 30px">${data[i].user.username}: ${data[i].name}</p>`
+
+            }
+            document.getElementById('listComment').innerHTML = str;
+        })
+    }
+
+    function addComment() {
+        let data = {
+            name: document.getElementById('cmt').value,
+            user: {
+                id: localStorage.getItem('user')
+            }
+        }
+        axios.post('http://localhost:8080/comments', data).then(() => {
+            loadComment();
+            document.getElementById('cmt').value = ''
+        })
+    }
 
     axios.get('http://localhost:8080/products').then(res => {
         let data = res.data;
@@ -434,8 +464,10 @@
 
     function loadMenu() {
         let str = `
-                                    <li class="active"><a href="index1.html">Home</a></li>
-                                    <li class="active"><a href="index2.html">Shop 2</a></li>`
+                                    <li class="active"><a href="index1.html">Shop 1</a></li>
+                                    <li class="active"><a href="index2.html">Shop 2</a></li>
+                                    <li class="active"><a href="index3.html">Shop 3</a></li>
+        `
         if (localStorage.getItem('user') == null) {
             str += `
                                     <li><a href="login.html">Login</a></li>
